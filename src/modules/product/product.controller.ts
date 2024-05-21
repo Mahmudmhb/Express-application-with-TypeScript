@@ -31,7 +31,9 @@ const getProducts = async (req: Request, res: Response) => {
 const getSigleProduct = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
+    console.log(productId);
     const result = await ProductServices.getSigleProductFromDB(productId);
+    console.log(result);
     res.status(200).json({
       success: true,
       message: "Products fetched successfully!",
@@ -41,8 +43,47 @@ const getSigleProduct = async (req: Request, res: Response) => {
     console.log(err);
   }
 };
+const updateOneProduct = async (req: Request, res: Response) => {
+  try {
+    const { _id, ...updateData } = req.body;
+
+    const result = await ProductServices.updateOneProductFromDB(
+      _id,
+      updateData
+    );
+    // console.log("this is result", result);
+    if (result.modifiedCount === 1) {
+      res.status(200).json({
+        success: true,
+        message: "Product updated successfully!",
+        data: updateData,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const deleteOneProduct = async (req: Request, res: Response) => {
+  try {
+    const { productId } = req.params;
+    const result = await ProductServices.deleteOneProductFromDB(productId);
+
+    if (result.deletedCount === 1) {
+      res.status(200).json({
+        success: true,
+        message: "Product deleted successfully!",
+        data: null,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
 export const productControllers = {
   createProduct,
   getProducts,
   getSigleProduct,
+  updateOneProduct,
+  deleteOneProduct,
 };

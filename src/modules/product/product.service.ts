@@ -13,8 +13,26 @@ const getSigleProductFromDB = async (_id: string) => {
   const result = await ProductModel.findOne({ _id });
   return result;
 };
+
+const updateOneProductFromDB = async (
+  _id: string,
+  updateData: Partial<Product>
+) => {
+  const result = await ProductModel.updateOne(
+    { _id },
+    { $set: updateData },
+    { runValidators: true }
+  );
+  return result;
+};
+const deleteOneProductFromDB = async (_id: string) => {
+  const result = await ProductModel.deleteOne({ _id });
+  return result;
+};
 export const ProductServices = {
   createProductIntoDB,
   getAllProductsFromDB,
   getSigleProductFromDB,
+  updateOneProductFromDB,
+  deleteOneProductFromDB,
 };
