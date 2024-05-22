@@ -8,6 +8,7 @@ const createOrdersIntoDB = async (orders: Orders) => {
   if (!productExists) {
     throw new Error("Product does not exist");
   } else {
+    //Update the inventory quantity and inStock status based on the ordered quantity
     const updateQuantity = productExists?.inventory.quantity - orders.quantity;
     if (productExists?.inventory.quantity > 0 && 0 <= updateQuantity) {
       const result = OrdersModel.create(orders);
@@ -20,7 +21,6 @@ const createOrdersIntoDB = async (orders: Orders) => {
           "inventory.inStock": updateQuantity > 0,
         }
       );
-      console.log(updateDataProduct);
 
       return result;
     } else {

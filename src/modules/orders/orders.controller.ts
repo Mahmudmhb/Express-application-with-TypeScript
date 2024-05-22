@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import { OrdersService } from "./orders.service";
+import { ordersValidationSchema } from "./orders.validation";
+import { error } from "console";
 
 const createOrders = async (req: Request, res: Response) => {
   try {
     const newOrder = req.body;
-    const result = await OrdersService.createOrdersIntoDB(newOrder);
-    console.log(result);
+    //validation with Joi
+    const { error, value } =
+      ordersValidationSchema.ordersSchema.validate(newOrder);
+    // create a new order from clint
+    const result = await OrdersService.createOrdersIntoDB(value);
     res.status(200).json({
       success: true,
       message: "Product created successfully!",
@@ -14,7 +19,7 @@ const createOrders = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(404).json({
       success: false,
-      message: "Insufficient quantity available in inventory",
+      message: error,
     });
   }
 };
