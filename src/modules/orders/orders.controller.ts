@@ -5,6 +5,7 @@ const createOrders = async (req: Request, res: Response) => {
   try {
     const newOrder = req.body;
     const result = await OrdersService.createOrdersIntoDB(newOrder);
+    console.log(result);
     res.status(200).json({
       success: true,
       message: "Product created successfully!",
@@ -23,9 +24,8 @@ const RetrieveOrders = async (req: Request, res: Response) => {
     const { email } = req.query;
     if (email) {
       // If email query parameter is present, retrieve orders by email
-      const result = await OrdersService.getOrdersFromDBUsingEmail(
-        email as string
-      );
+      const result =
+        (await OrdersService.getOrdersFromDBUsingEmail(email as string)) || [];
       if (result.length === 0) {
         return res.status(404).json({
           success: false,
@@ -53,55 +53,8 @@ const RetrieveOrders = async (req: Request, res: Response) => {
     });
   }
 };
-// const RetrieveAllOrders = async (req: Request, res: Response) => {
-//   try {
-//     const result = await OrdersrService.getAllOrdersFromDB();
-//     res.status(200).json({
-//       success: true,
-//       message: "Orders fetched successfully!",
-//       data: result,
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       success: false,
-//       message: "Order not found",
-//     });
-//   }
-// };
 
-// const RetrieveOrdersbyUserEmail = async (req: Request, res: Response) => {
-//   try {
-//     const { email } = req.query;
-//     if (!email) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Email query parameter is required",
-//       });
-//     }
-//     const result = await OrdersrService.getOrdersFromDBUsingEmail(
-//       email as string
-//     );
-//     if (result?.length === 0) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Route not found",
-//       });
-//     }
-//     res.status(200).json({
-//       success: true,
-//       message: "Orders fetched successfully for user email!",
-//       data: result,
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       success: false,
-//       message: "Route not found",
-//     });
-//   }
-// };
 export const OrdersController = {
   createOrders,
   RetrieveOrders,
-  // RetrieveAllOrders,
-  // RetrieveOrdersbyUserEmail,
 };

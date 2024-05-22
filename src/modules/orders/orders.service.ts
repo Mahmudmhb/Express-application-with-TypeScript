@@ -3,13 +3,30 @@ import { Orders } from "./orders.interfase";
 import { OrdersModel } from "./orders.model";
 
 const createOrdersIntoDB = async (orders: Orders) => {
-  const productExists = await ProductModel.findById(orders.productId);
+  const { productId } = orders;
+  const productExists = await ProductModel.findById(productId);
   if (!productExists) {
     throw new Error("Product does not exist");
-  }
-  const result = OrdersModel.create(orders);
+  } else {
+    const updateQuantity = productExists?.inventory.quantity - orders.quantity;
+    if (productExists?.inventory.quantity > 0 && 0 <= updateQuantity) {
+      const result = OrdersModel.create(orders);
+      const updateDataProduct = await ProductModel.updateOne(
+        {
+          _id: productId,
+        },
+        {
+          "inventory.quantity": updateQuantity,
+          "inventory.inStock": updateQuantity > 0,
+        }
+      );
+      console.log(updateDataProduct);
 
-  return result;
+      return result;
+    } else {
+      throw new Error("Insufficient quantity available in inventory");
+    }
+  }
 };
 const getAllOrdersFromDB = async () => {
   const result = await OrdersModel.find();
