@@ -31,7 +31,6 @@ const deleteOneProductFromDB = async (_id: string) => {
 };
 const searchProductsFromDB = async (searchProduct: string) => {
   const regex = new RegExp(searchProduct, "i");
-  console.log(regex);
   const result = await ProductModel.find({
     $or: [{ name: regex }, { description: regex }, { category: regex }],
   });

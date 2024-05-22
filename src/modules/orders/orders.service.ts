@@ -17,9 +17,11 @@ const getAllOrdersFromDB = async () => {
 };
 const getOrdersFromDBUsingEmail = async (email: string) => {
   const result = await OrdersModel.find({ email });
-  return result;
+  if (result.length > 0) {
+    return result;
+  }
 };
-export const OrdersrService = {
+export const OrdersService = {
   createOrdersIntoDB,
   getAllOrdersFromDB,
   getOrdersFromDBUsingEmail,
