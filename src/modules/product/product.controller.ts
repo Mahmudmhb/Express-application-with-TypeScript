@@ -20,21 +20,41 @@ const createProduct = async (req: Request, res: Response) => {
   }
 };
 
-const getProducts = async (req: Request, res: Response) => {
+const getProductsAndSearch = async (req: Request, res: Response) => {
   try {
-    const result = await ProductServices.getAllProductsFromDB();
-    res.status(200).json({
-      success: true,
-      message: "Products fetched successfully!",
-      data: result,
-    });
+    const { searchTerm } = req.query;
+
+    if (searchTerm) {
+      // If searchTerm is provided, search products
+      const result = await ProductServices.searchProductsFromDB(
+        searchTerm as string
+      );
+      res.status(200).json({
+        success: true,
+        message: `Products matching search term '${searchTerm}' fetched successfully!`,
+        data: result,
+      });
+    } else {
+      // If no searchTerm, get all products
+      const result = await ProductServices.getAllProductsFromDB();
+      res.status(200).json({
+        success: true,
+        message: "Products fetched successfully!",
+        data: result,
+      });
+    }
   } catch (err) {
-    console.log(err);
+    res.status(500).json({
+      success: false,
+      error: err,
+    });
   }
 };
+
 const getSigleProduct = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
+    //get single product useing id
     const result = await ProductServices.getSigleProductFromDB(productId);
     res.status(200).json({
       success: true,
@@ -48,12 +68,11 @@ const getSigleProduct = async (req: Request, res: Response) => {
 const updateOneProduct = async (req: Request, res: Response) => {
   try {
     const { _id, ...updateData } = req.body;
-
+    //update products useing id
     const result = await ProductServices.updateOneProductFromDB(
       _id,
       updateData
     );
-    // console.log("this is result", result);
     if (result.modifiedCount === 1) {
       res.status(200).json({
         success: true,
@@ -69,6 +88,7 @@ const updateOneProduct = async (req: Request, res: Response) => {
 const deleteOneProduct = async (req: Request, res: Response) => {
   try {
     const { productId } = req.params;
+    //delete products using id
     const result = await ProductServices.deleteOneProductFromDB(productId);
 
     if (result.deletedCount === 1) {
@@ -83,26 +103,10 @@ const deleteOneProduct = async (req: Request, res: Response) => {
   }
 };
 
-const searchAllProducts = async (req: Request, res: Response) => {
-  try {
-    const { searchTerm } = req.query;
-    const result = await ProductServices.searchProductsFromDB(
-      searchTerm as string
-    );
-    res.status(200).json({
-      success: true,
-      message: `Products matching search term '${searchTerm}' fetched successfully!`,
-      data: result,
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
 export const productControllers = {
   createProduct,
-  getProducts,
+  getProductsAndSearch,
   getSigleProduct,
   updateOneProduct,
   deleteOneProduct,
-  searchAllProducts,
 };
